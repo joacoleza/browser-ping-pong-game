@@ -7,11 +7,45 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <header>
+      <h1>Ping Pong Game</h1>
+      <p>The first player to score 3 points is the winner.</p>
+      <p>
+        Player 1: Use <strong>W</strong> (up) and <strong>S</strong> (down).
+      </p>
+      <p>
+        Player 2 (if human): Use <strong>Arrow Up</strong> and
+        <strong>Arrow Down</strong>.
+      </p>
+    </header>
+    <div id="scoreboard">
+      <div id="score">
+        <span id="player1-score">Player 1: 0</span> |
+        <span id="player2-score">Player 2: 0</span>
+      </div>
+    </div>
     <div id="modal">
       <div id="modal-content">
-        <h1>Select Player 2</h1>
-        <button id="human-btn">Human</button>
-        <button id="ai-btn">AI</button>
+        <h1>Setup Game</h1>
+        <p>Select Player 2 Mode:</p>
+        <div id="mode-buttons">
+          <button id="human-btn">Human</button>
+          <button id="ai-btn">AI</button>
+        </div>
+        <p>Select Game Speed:</p>
+        <div id="speed-buttons">
+          <button class="speed-btn" data-speed="slow">Slow</button>
+          <button class="speed-btn" data-speed="normal">Normal</button>
+          <button class="speed-btn" data-speed="fast">Fast</button>
+        </div>
+        <button id="start-game-btn" disabled>Start Game</button>
+      </div>
+    </div>
+    <div id="result-modal">
+      <div id="result-modal-content">
+        <h2>Game Over!</h2>
+        <p id="result-message"></p>
+        <button id="continue-btn">Continue</button>
       </div>
     </div>
     <div id="game-container">
