@@ -1,6 +1,12 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// Modal handling
+const modal = document.getElementById("modal");
+const humanBtn = document.getElementById("human-btn");
+const aiBtn = document.getElementById("ai-btn");
+let isAIPlayer = false;
+
 // Canvas setup
 canvas.width = 800;
 canvas.height = 400;
@@ -32,13 +38,16 @@ let player2Direction = 0;
 document.addEventListener("keydown", (e) => {
   if (e.key === "w") player1Direction = -1;
   if (e.key === "s") player1Direction = 1;
-  if (e.key === "ArrowUp") player2Direction = -1;
-  if (e.key === "ArrowDown") player2Direction = 1;
+  if (!isAIPlayer) {
+    if (e.key === "ArrowUp") player2Direction = -1;
+    if (e.key === "ArrowDown") player2Direction = 1;
+  }
 });
 
 document.addEventListener("keyup", (e) => {
   if (e.key === "w" || e.key === "s") player1Direction = 0;
-  if (e.key === "ArrowUp" || e.key === "ArrowDown") player2Direction = 0;
+  if (!isAIPlayer && (e.key === "ArrowUp" || e.key === "ArrowDown"))
+    player2Direction = 0;
 });
 
 // Touch controls for mobile
@@ -46,13 +55,22 @@ canvas.addEventListener("touchmove", (e) => {
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
 
-  // Map touch positions to paddles
   if (touch.clientX < rect.width / 2) {
     player1.y = touch.clientY - rect.top - paddleHeight / 2;
-  } else {
+  } else if (!isAIPlayer) {
     player2.y = touch.clientY - rect.top - paddleHeight / 2;
   }
 });
+
+// AI behavior
+function moveAI() {
+  const centerY = player2.y + paddleHeight / 2;
+  if (centerY < ballY) player2.y += paddleSpeed;
+  if (centerY > ballY) player2.y -= paddleSpeed;
+
+  // Prevent AI paddle from going out of bounds
+  player2.y = Math.max(0, Math.min(canvas.height - paddleHeight, player2.y));
+}
 
 // Game loop
 function gameLoop() {
@@ -103,14 +121,30 @@ function gameLoop() {
 
   // Update paddle positions
   player1.y += player1Direction * paddleSpeed;
-  player2.y += player2Direction * paddleSpeed;
+  if (!isAIPlayer) {
+    player2.y += player2Direction * paddleSpeed;
+    player2.y = Math.max(0, Math.min(canvas.height - paddleHeight, player2.y));
+  } else {
+    moveAI();
+  }
 
   // Prevent paddles from going out of bounds
   player1.y = Math.max(0, Math.min(canvas.height - paddleHeight, player1.y));
-  player2.y = Math.max(0, Math.min(canvas.height - paddleHeight, player2.y));
 
   requestAnimationFrame(gameLoop);
 }
 
-// Start game loop
-gameLoop();
+// Start game after modal choice
+humanBtn.addEventListener("click", () => {
+  isAIPlayer = false;
+  modal.style.display = "none";
+  document.getElementById("game-container").style.display = "flex";
+  gameLoop();
+});
+
+aiBtn.addEventListener("click", () => {
+  isAIPlayer = true;
+  modal.style.display = "none";
+  document.getElementById("game-container").style.display = "flex";
+  gameLoop();
+});
